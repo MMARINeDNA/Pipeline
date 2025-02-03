@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Change to the directory containing the BLAST database
+cd /mnt/nfs/home/KellyCEG/blastdb_euk/
+
+# Update the PATH environment variable to include the BLAST+ binaries
+PATH=$PATH:/mnt/nfs/home/KellyCEG/ncbi-blast-2.15.0+/bin
+export PATH=${PATH}:${HOME}/edirect
+export BLASTDB=/mnt/nfs/home/KellyCEG/blastdb_euk/
+# Define BLAST database and query FASTA file
+BLAST_DB='/mnt/nfs/home/KellyCEG/blastdb_euk/nt_euk'  # The BLAST database
+QUERY_FASTA='/mnt/nfs/home/KellyCEG/tmp/raw/seqs_to_annotate.fasta'  # The FASTA file to BLAST
+
+# BLAST PARAMETERS
+PERCENT_IDENTITY="97"
+WORD_SIZE="30"
+EVALUE="1e-30"
+MAXIMUM_MATCHES="50"
+CULLING="50"
+BLAST_OUTPUT="/mnt/nfs/home/KellyCEG/tmp/processed/new_annotations.txt"
+
+# Initialize NEGATIVE_TAXIDLIST
+NEGATIVE_TAXIDLIST=""
+
+# Taxid list for limiting to vertebrates
+TAXIDLIST='/mnt/nfs/home/KellyCEG/ncbi-blast-2.15.0+/7742.txids'
+
+# BLAST command
+BLAST_CMD="/mnt/nfs/home/KellyCEG/ncbi-blast-2.15.0+/bin/blastn \
+    -query \"${QUERY_FASTA}\" \
+    -db \"${BLAST_DB}\" \
+    -num_threads 16 \
+    -perc_identity \"${PERCENT_IDENTITY}\" \
+    -word_size \"${WORD_SIZE}\" \
+    -evalue \"${EVALUE}\" \
+    -max_target_seqs \"${MAXIMUM_MATCHES}\" \
+    -culling_limit \"${CULLING}\" \
+    -taxidlist \"${TAXIDLIST}\" \
+    -outfmt \"6 sscinames scomnames qseqid sseqid pident length mismatch gapopen \
+qcovus qstart qend sstart send evalue bitscore staxids qlen qcovs\" \
+    -out \"${BLAST_OUTPUT}\""
+
+# Execute the BLAST command
+eval $BLAST_CMD
+
