@@ -12,7 +12,7 @@ FASTQ_LOCATION=",shQuote(FASTQ_LOCATION),"
 
 
 cd \"${FASTQ_LOCATION}\"
-FILES=$(ls ./${PRIMERNAME}'-'*R1*.fastq.gz)
+FILES=$(ls ./*R1*.fastq.gz)
 mkdir '../for_dada2/'
 mkdir '../logs/'
 
