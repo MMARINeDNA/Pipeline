@@ -172,7 +172,13 @@ LCA <- function(
     left_join(e, by = "Hash") %>%
     left_join(b, by = "Hash") %>%
     left_join(acc_df,  by = "Hash") %>% 
-    filter(Order != "") 
+    # Keep every hash that actually got a lineage back from taxonkit.
+    # (Hashes already present in `db` were filtered out of `a` upstream, so they
+    #  come back as all-NA here and are the ones we want to drop.)
+    # NB: do NOT filter on Order != "" -- NCBI leaves the order rank blank for
+    # many fish families (Embiotocidae, Moronidae, Sciaenidae, Pomacentridae...),
+    # which silently discarded species-level annotations.
+    filter(!is.na(LCA_taxid))
   
   # ** Join the max pident to f **
   f <- f %>%
@@ -185,13 +191,20 @@ LCA <- function(
     )
   
   # ** Now run rank-choosing logic **
+  # Descend the lineage and take the finest rank that is actually populated.
+  # Blank ("") and NA are treated identically, and gaps at any rank are skipped
+  # rather than aborting the descent.
+  blank_to_na <- function(x) if_else(is.na(x) | x == "", NA_character_, x)
+
   f <- f %>%
-    mutate(BestTaxon = case_when(
-      Species != "" ~ Species,
-      Genus != "" & Species == "" ~ Genus,
-      Family != "" & Genus == "" & Species == "" ~ Family,
-      Order != "" & Family =="" & Genus == "" ~ Order,
-      TRUE ~ NA_character_
+    mutate(BestTaxon = coalesce(
+      blank_to_na(Species),
+      blank_to_na(Genus),
+      blank_to_na(Family),
+      blank_to_na(Order),
+      blank_to_na(Class),
+      blank_to_na(Phylum),
+      blank_to_na(Kingdom)
     ))
   
   # Haplotype assignment logic
