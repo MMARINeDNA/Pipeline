@@ -69,7 +69,7 @@ setwd(here())
 
 # Source external functions for BLAST and LCA
 source("CEG_BLAST_function_4.1.R")
-source("LCA_function_4.0.R")
+source("LCA_function_6.1.R")
 
 ##Define several path and parameters here
 #----------------------------------------------------------------------------------
@@ -362,7 +362,9 @@ if (file.size(paste0(PROCESSED_LOCATION, "/", RUN_NAME, "_", PRIMERNAME, "/outpu
   db <- read.csv(paste0(DATABASE_LOCATION, PRIMERNAME, "_database.csv"), row.names = 1)
 } else {
   db <- LCA(BLASTOUTPUT = paste0(PROCESSED_LOCATION, "/", RUN_NAME, "_", PRIMERNAME, "/outputs/new_annotations.txt"),
-            FASTA = paste0(PROCESSED_LOCATION, "/", RUN_NAME, "_", PRIMERNAME, "/outputs/seqs_to_annotate.fasta"))
+            FASTA = paste0(PROCESSED_LOCATION, "/", RUN_NAME, "_", PRIMERNAME, "/outputs/seqs_to_annotate.fasta"),
+            SP_MAX_THOLD = SP_MAX_THOLD,
+            SP_MIN_THOLD = SP_MIN_THOLD)
   write.csv(db %>% distinct(), paste0(DATABASE_LOCATION, PRIMERNAME, "_database.csv"))
 }
 
