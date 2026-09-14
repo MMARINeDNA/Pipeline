@@ -15,7 +15,7 @@ QUERY_FASTA='/mnt/nfs/home/KellyCEG/tmp/raw/seqs_to_annotate.fasta'  # The FASTA
 PERCENT_IDENTITY="90"
 WORD_SIZE="30"  
 EVALUE="1e-30" 
-MAXIMUM_MATCHES="50"
+MAXIMUM_MATCHES="100"
 CULLING="50"
 BLAST_OUTPUT="/mnt/nfs/home/KellyCEG/tmp/processed/new_annotations.txt"
 
